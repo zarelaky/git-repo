@@ -4,7 +4,7 @@
 ##
 #REPO_URL = 'https://gerrit.googlesource.com/git-repo'
 REPO_URL = 'https://github.com/zarelaky/repo.git'
-REPO_REV = 'stable_fetch_from_github'
+REPO_REV = 'local'
 
 # Copyright (C) 2008 Google Inc.
 #
