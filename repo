@@ -5,7 +5,8 @@
 import os
 REPO_URL = os.environ.get('REPO_URL', None)
 if not REPO_URL:
-  REPO_URL = 'https://gerrit.googlesource.com/git-repo'
+    #REPO_URL = 'https://gerrit.googlesource.com/git-repo'
+    REPO_URL = 'https://github.com/zarelaky/git-repo.git'
 REPO_REV = 'stable'
 
 # Copyright (C) 2008 Google Inc.
@@ -105,6 +106,39 @@ JuinEP+AwLAUZ1Bsx9ISC0Agpk2VeHXPL3FGhroEmoMvBzO0kTFGyoeT7PR/BfKv
 +H/g3HsL2LOB9uoIm8/5p2TTU5ttYCXMHhQZ81AY
 =AUp4
 -----END PGP PUBLIC KEY BLOCK-----
+
+        zarelaky@hotmail.com
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v1
+
+mQENBFPZz/kBCADlYcnrmwWwzh5K/the2gx2RdOhaqdHSVWKidgjT1X+mV2l2y3A
+RHK9UKbTDoVz9muVcbn5pjl0Z1XJA6Zk+BsbgugyR2VA1pcs61GecCoXZOC9keFV
+DZ7fAk6aJ2KjIZ3/yBujptTx0mflK7VZL9p1NYB+2LlWC9udtJqPkItyhQDy7pcN
+rFbl1EAQtTi8jYqCHO+NHWP2lipEHcaZ1sOBxgZ4EZ9Mwiyap9TWL9OagyzGNdFF
+b6LHcp5CLKzFvBsiWfRhgHo6Wz5X/s42QUvI3IFh+TyE5Lvs4xRN2Lel7/lSBKo1
+SGNNJHjPbxAnn3KaD2z4BNlKky/MluOLQnALABEBAAG0L3phcmVsYWt5ICh6YXJl
+bGFreS96YWt5KSA8emFyZWxha3lAaG90bWFpbC5jb20+iQE4BBMBAgAiBQJT2c/5
+AhsDBgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRBTlWQovXjxXNInCACSuu3K
+6hQBXj/qib8ZmiDEf5mjh21hwMz9drGmHjDj+wCyGbGsq9JfMWbgCrF3qkno8ecz
+jeBwRA7YmpaaisMYHJ0NIxC4soQ0hpr9Tsj3+rnD9eZumT7QORrMOcSvjfhcs6mJ
+PunrZEbt/Lzfenm28l0jqIH0RXyqh6oxh5DcBpxp9lW5tMpycktI/uB4IwebUEdF
+lip04xCL43ZREN4DfnQts0J01zP5m87IzLJTks99+26l5h+e0eLN+r8mJ9sCfbR0
+F6FGWqVVbUpZZb1U9FEqTWVztSZD2HdzcGUwU9rHaqWBQwnV6Ix6QejlIDvNAyMw
+FLX+BPM3SWQfF+JHuQENBFPZz/kBCADDt5Siu8gYwJLjOSj8oH94AAHBfTImbaO1
+3qrSxX+KjlcE7gFxEYXh161Eqq6u+yBQVOWOSYnEyOvcu59cPnAHA2TGOaX6FOpL
+PvoLa22+nr4pFAVhWCx0D4p+3RMkzlBtLkoj/Ro32msKv/VS9MbxikZaldjFZqmC
+X/jTjKZTfBOU0/V/N5dWyZrnaxoFClQJ+AZGrCzkjKA23jZzV1PjhjN4CmjOjwt4
++LVRALDxdLo05aTe+UCXM5vXs7eE3hExqllCNZwgxmis5mxt9l73ZK2PMzeEGcjW
+wn0oWUI6BEPb9rI+5Q6jicMxLCkFVs8E+V3Ps51JdsXtdvubLQYPABEBAAGJAR8E
+GAECAAkFAlPZz/kCGwwACgkQU5VkKL148VymWggAmNuzZaq35x9lJEh8Esocuad6
+xxeEeWKGqMEe7Ignyaem2N3/mOGZ6OxhxVmqMRHo4DQUQtl36Fg3iiiunfEh8DVy
++VYkF31vE9TryBxDb+3SHjSGzjunnLAIb+h5QqiINY3o3axCbwXEneipNK7ohs3X
+0+EfnhB9SfZSnbwJhhUu4AQ2E7N5onpYPxmGpSOzatv4vHyKJAqTKTT3aocJACmU
+1RQ39mONYJPq12SFi9ZFcRtY/7YWWodanR0SEzJd61SjanCKD4TaUwzXqgW2kNFN
+kUSyihUd/wfgIMkofynysNXWPLay5EV6Z0va5Ze4EtSxQ8XkdEnvKhPSxj8FFQ==
+=NmSS
+-----END PGP PUBLIC KEY BLOCK-----
+
 """
 
 GIT = 'git'                      # our git command
@@ -121,11 +155,13 @@ GITC_FS_ROOT_DIR = '/gitc/manifest-rw/'
 import errno
 import optparse
 import platform
+import os
 import re
 import shutil
 import stat
 import subprocess
 import sys
+import tarfile
 
 if sys.version_info[0] == 3:
   import urllib.request
@@ -289,6 +325,17 @@ class CloneFailure(Exception):
   """Indicate the remote clone of repo itself failed.
   """
 
+def _TryExactLocal(dst):
+    repo_position = sys.argv[0]
+    repo_archive = os.path.abspath(os.path.join(os.path.dirname(repo_position),r"repo.tar.bz2"))
+    try: 
+        tar=tarfile.open(repo_archive, "r:bz2")
+        if tar is not None:
+            tar.extractall(os.path.dirname(repodir))
+            return True
+    except Exception as e:
+        return False
+    return False
 
 def _Init(args, gitc_init=False):
   """Installs repo by cloning it over the network.
@@ -355,7 +402,8 @@ def _Init(args, gitc_init=False):
       can_verify = True
 
     dst = os.path.abspath(os.path.join(repodir, S_repo))
-    _Clone(url, dst, opt.quiet, not opt.no_clone_bundle)
+    if _TryExactLocal(dst) is False:
+        _Clone(url, dst, opt.quiet, not opt.no_clone_bundle)
 
     if not os.path.isfile('%s/repo' % dst):
       _print("warning: '%s' does not look like a git-repo repository, is "
